@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name" translatable="false">EduVenture</string>
+    <string name="entrance">Вход</string>
+    <string name="mail">Почта</string>
+    <string name="mail_placeholder" translatable="false">example@mail.com</string>
+    <string name="password">Пароль</string>
+    <string name="forgot_password">Забыли пароль?</string>
+    <string name="enter">Войти</string>
+    <string name="dont_have_account">У вас нету акаунта?</string>
+    <string name="registration">Регистрация</string>
+</resources>

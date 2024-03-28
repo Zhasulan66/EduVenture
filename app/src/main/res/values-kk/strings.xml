@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="entrance">Kiru</string>
+    <string name="mail">Poshta</string>
+    <string name="password">Kupiasoz</string>
+    <string name="forgot_password">Kupia sozdi umyttynyz ba?</string>
+    <string name="enter">Kiru</string>
+    <string name="dont_have_account">Sizde akaunt jok pa?</string>
+    <string name="registration">Tirkelu</string>
+</resources>
