@@ -7,4 +7,12 @@
     <string name="enter">Kiru</string>
     <string name="dont_have_account">Sizde akaunt jok pa?</string>
     <string name="registration">Tirkelu</string>
+    <string name="phone_number">Телефон номері</string>
+    <string name="already_have_account">Сізде аккаунт бар ма?</string>
+    <string name="news">Жаңалықтар</string>
+    <string name="language">Қазақша</string>
+    <string name="universities">Университеттер иен Гранттар</string>
+    <string name="internship">Тағылымдама</string>
+    <string name="save">Сақтау</string>
+    <string name="read">Оқу</string>
 </resources>

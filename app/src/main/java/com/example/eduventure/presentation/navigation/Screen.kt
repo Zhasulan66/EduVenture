@@ -9,4 +9,9 @@ sealed class Screen(val route: String) {
     data object RegistrationScreen : Screen("registration_screen")
 
     data object VerifyEmailScreen : Screen("verify_email_screen")
+
+    data object HomeScreen : Screen("home_screen")
+    data object UniversityScreen : Screen("university_screen")
+    data object InternshipScreen : Screen("internship_screen")
+    data object ProfileScreen : Screen("profile_screen")
 }

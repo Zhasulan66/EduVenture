@@ -6,8 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.eduventure.presentation.LanguageManager
-import com.example.eduventure.presentation.screens.LoginScreen
-import com.example.eduventure.presentation.screens.SplashScreen
+import com.example.eduventure.presentation.screens.*
 
 @Composable
 fun Navigation() {
@@ -35,11 +34,11 @@ fun Navigation() {
         }
 
         //RegistrationScreen
-        /*composable(route = Screen.RegistrationScreen.route) {
+        composable(route = Screen.RegistrationScreen.route) {
             RegistrationScreen(
                 navController = navController
             )
-        }*/
+        }
 
         //VerifyEmailScreen
         /*composable(route = Screen.VerifyEmailScreen.route+ "/{email}",
@@ -56,5 +55,33 @@ fun Navigation() {
                 userEmail = entry.arguments!!.getString("email").toString()
             )
         }*/
+
+        //HomeScreen
+        composable(route = Screen.HomeScreen.route) {
+            HomeScreen(
+                navController = navController
+            )
+        }
+
+        //UniversityScreen
+        composable(route = Screen.UniversityScreen.route) {
+            UniversityScreen(
+                navController = navController
+            )
+        }
+
+        //InternshipScreen
+        composable(route = Screen.InternshipScreen.route) {
+            InternshipScreen(
+                navController = navController
+            )
+        }
+
+        //ProfileScreen
+        composable(route = Screen.ProfileScreen.route) {
+            ProfileScreen(
+                navController = navController
+            )
+        }
     }
 }

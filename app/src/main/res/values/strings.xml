@@ -8,4 +8,13 @@
     <string name="enter">Войти</string>
     <string name="dont_have_account">У вас нету акаунта?</string>
     <string name="registration">Регистрация</string>
+    <string name="username" translatable="false">Username</string>
+    <string name="phone_number">Номер телефона</string>
+    <string name="already_have_account">Уже есть аккаунт?</string>
+    <string name="news">Новости</string>
+    <string name="language">Русский</string>
+    <string name="universities">Университеты и Гранты</string>
+    <string name="internship">Стажировки</string>
+    <string name="save">Сохранить</string>
+    <string name="read">Читать</string>
 </resources>
