@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,40 +29,44 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.eduventure.R
 import com.example.eduventure.common.Constants
-import com.example.eduventure.domain.model.News
+import com.example.eduventure.domain.model.University
 import com.example.eduventure.presentation.ui.theme.PurpleDark
 
 @Composable
-fun NewsCard(
-    news: News,
+fun UniversityCard(
+    university: University,
     onClick: () -> Unit
 ){
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(140.dp)
+            .height(88.dp)
             .shadow(
                 elevation = 10.dp,
-                shape = RoundedCornerShape(20.dp)
+                shape = RoundedCornerShape(12.dp)
             )
-            .clip(RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(12.dp))
             .background(Color.White)
+            .clickable {
+                onClick()
+            }
     ){
         Row(
             modifier = Modifier
                 .fillMaxSize()
-
+                .padding(8.dp)
         ){
             Image(
-                painter = if(news.photo1.isNotEmpty()) {
+                painter = if(university.logo.isNotEmpty()) {
                     rememberAsyncImagePainter(
-                        model = news.photo1,
+                        model = university.logo,
                         placeholder = painterResource(id = R.drawable.img_placeholder),
                     )
                 } else painterResource(id = R.drawable.img_placeholder),
                 contentDescription = "img",
                 modifier = Modifier
-                    .width(140.dp),
+                    .width(68.dp),
                 contentScale = ContentScale.FillBounds
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -73,20 +76,11 @@ fun NewsCard(
                     .fillMaxWidth()
                     .padding(8.dp)
             ){
-                //date
-                Text(
-                    text = news.date,
-                    fontSize = 12.sp,
-                    fontFamily = Constants.INTER_FONT_FAMILY,
-                    color = Color.Black,
-                    maxLines = 1
-                )
-                Spacer(modifier = Modifier.height(8.dp))
 
                 //title
                 Text(
-                    text = news.title,
-                    fontSize = 16.sp,
+                    text = university.name,
+                    fontSize = 12.sp,
                     fontFamily = Constants.INTER_FONT_FAMILY,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.Black,
@@ -96,37 +90,13 @@ fun NewsCard(
 
                 //body text
                 Text(
-                    text = "${news.description.substring(0, 30)}...",
+                    text = "rating by country: ${university.ratingByCountry}",
                     fontSize = 12.sp,
                     fontFamily = Constants.INTER_FONT_FAMILY,
                     color = Color.Black,
-                    maxLines = 1
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(32.dp)
-                        .clip(RoundedCornerShape(24.dp))
-                        .background(PurpleDark)
-                        .clickable {
-                            onClick()
-                        },
-                    contentAlignment = Alignment.Center
-                ){
-                    Text(
-                        text = stringResource(id = R.string.read),
-                        fontSize = 14.sp,
-                        fontFamily = Constants.INTER_FONT_FAMILY,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.White,
-                    )
-                }
 
             }
         }
     }
-
-
 }

@@ -11,8 +11,12 @@
     <string name="already_have_account">Сізде аккаунт бар ма?</string>
     <string name="news">Жаңалықтар</string>
     <string name="language">Қазақша</string>
-    <string name="universities">Университеттер иен Гранттар</string>
+    <string name="universities">Университеттер мен Гранттар</string>
     <string name="internship">Тағылымдама</string>
     <string name="save">Сақтау</string>
     <string name="read">Оқу</string>
+    <string name="search">Izdeu...</string>
+    <string name="retry">Kaitadan</string>
+    <string name="loading">Kutiniz</string>
+    <string name="loading_failed">Jukteu mumkin emes</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.example.eduventure.presentation.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -45,23 +48,107 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.eduventure.R
 import com.example.eduventure.common.Constants
+import com.example.eduventure.domain.model.Auth.UserRequest
+import com.example.eduventure.domain.model.Auth.UserResponse
+import com.example.eduventure.domain.model.Resource
 import com.example.eduventure.presentation.navigation.Screen
 import com.example.eduventure.presentation.ui.theme.BlueDark
 import com.example.eduventure.presentation.ui.theme.PurpleLight
+import com.example.eduventure.presentation.viewmodels.AuthViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun RegistrationScreen(
     navController: NavController,
 ) {
+    val viewModel = hiltViewModel<AuthViewModel>()
+    val registrationState by viewModel.registrationState.collectAsState()
+
+    Box(modifier = Modifier
+        .fillMaxSize()){
+
+        when(registrationState){
+            is Resource.Initial -> {
+                RegisterFields(navController, viewModel)
+            }
+            is Resource.Loading -> {
+                LoadingScreen()
+            }
+            is Resource.Error -> {
+                ErrorScreen(modifier = Modifier, retryAction = {
+                    navController.popBackStack()
+                })
+            }
+            is Resource.Success -> {
+                val userResponse = (registrationState as Resource.Success<UserResponse>).data
+                Toast.makeText(LocalContext.current, "Regiter succesfully!", Toast.LENGTH_SHORT).show()
+                navController.navigate(Screen.LoginScreen.route){
+                    popUpTo(Screen.RegistrationScreen.route){ inclusive = true }
+                }
+                viewModel.registrationSuccess()
+
+            }
+        }
+
+    }
+
+}
+
+// Function to validate email
+internal fun isValidEmail(email: String): Boolean {
+    val emailPattern = Regex("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+")
+    return email.matches(emailPattern)
+}
+
+fun isPasswordValid(password: String): Boolean {
+    // Check minimum length
+    if (password.length < 8) {
+        return false
+    }
+
+    // Check if password contains numbers
+    val containsNumber = password.any { it.isDigit() }
+    if (!containsNumber) {
+        return false
+    }
+
+    // Check if password is entirely numeric
+    if (password.all { it.isDigit() }) {
+        return false
+    }
+
+    // Define common patterns to avoid
+    val commonPatterns = listOf("123", "password", "qwerty", "abc", "admin")
+
+    // Check if password contains any common patterns
+    if (commonPatterns.any { password.contains(it, ignoreCase = true) }) {
+        return false
+    }
+
+    // If all criteria pass, return true
+    return true
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RegisterFields(
+    navController: NavController,
+    viewModel: AuthViewModel
+){
     var userName by remember { mutableStateOf("") }
     var userEmail by remember { mutableStateOf("") }
     var userPhone by remember { mutableStateOf("") }
     var userPassword by remember { mutableStateOf("") }
     var isPasswordHide by remember { mutableStateOf(true) }
+
+    var isUserNameIncorrect by remember { mutableStateOf(false) }
+    var isUserEmailIncorrect by remember { mutableStateOf(false) }
+    var isUserPhoneIncorrect by remember { mutableStateOf(false) }
+    var isUserPasswordIncorrect by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -128,7 +215,7 @@ fun RegistrationScreen(
                         .height(56.dp)
                         .border(
                             width = 1.dp,
-                            color = Color.White,
+                            color = if(isUserNameIncorrect) Color.Red else Color.White,
                             shape = RoundedCornerShape(50)
                         ),
                     placeholder = {
@@ -162,7 +249,7 @@ fun RegistrationScreen(
                         .height(56.dp)
                         .border(
                             width = 1.dp,
-                            color = Color.White,
+                            color = if(isUserEmailIncorrect) Color.Red else Color.White,
                             shape = RoundedCornerShape(50)
                         ),
                     placeholder = {
@@ -196,7 +283,7 @@ fun RegistrationScreen(
                         .height(56.dp)
                         .border(
                             width = 1.dp,
-                            color = Color.White,
+                            color = if(isUserPhoneIncorrect) Color.Red else Color.White,
                             shape = RoundedCornerShape(50)
                         ),
                     placeholder = {
@@ -230,7 +317,7 @@ fun RegistrationScreen(
                         .height(56.dp)
                         .border(
                             width = 1.dp,
-                            color = Color.White,
+                            color = if(isUserPasswordIncorrect) Color.Red else Color.White,
                             shape = RoundedCornerShape(50)
                         ),
                     placeholder = {
@@ -266,6 +353,7 @@ fun RegistrationScreen(
                 )
                 Spacer(modifier = Modifier.height(52.dp))
 
+                //Enter button
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -275,7 +363,24 @@ fun RegistrationScreen(
                             brush = Brush.horizontalGradient(
                                 listOf(PurpleLight, BlueDark))
                         )
-                        .clickable {  },
+                        .clickable {
+                            isUserNameIncorrect = userName.isEmpty()
+                            isUserEmailIncorrect = userEmail.isEmpty()
+                            isUserPhoneIncorrect = userEmail.isEmpty()
+                            isUserPasswordIncorrect = userPassword.isEmpty()
+                            if (!isValidEmail(userEmail)) {
+                                isUserEmailIncorrect = true
+                            }
+                            if (!isPasswordValid(userPassword)) {
+                                isUserPasswordIncorrect = true
+                            }
+                            if (!isUserNameIncorrect && !isUserEmailIncorrect &&
+                                !isUserPhoneIncorrect && !isUserPasswordIncorrect
+                            ) {
+                                val userRequest = UserRequest(userName, userEmail, userPassword)
+                                viewModel.registerUser(userRequest)
+                            }
+                        },
                     contentAlignment = Alignment.Center
                 ){
                     Text(
@@ -325,5 +430,4 @@ fun RegistrationScreen(
 
 
     }
-
 }

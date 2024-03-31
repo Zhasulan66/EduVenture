@@ -122,9 +122,12 @@ fun LoginScreen(
                         fontSize = 16.sp,
                         fontFamily = INTER_FONT_FAMILY,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color.White,
+                        color = if(languageManager.getCurrentLanguage() == "kk") PurpleLight else Color.White,
                         modifier = Modifier
-                            .clickable {  }
+                            .clickable {
+                                languageManager.setLanguage("kk")
+                                languageManager.restartActivity()
+                            }
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
@@ -132,9 +135,12 @@ fun LoginScreen(
                         fontSize = 16.sp,
                         fontFamily = INTER_FONT_FAMILY,
                         fontWeight = FontWeight.SemiBold,
-                        color = PurpleLight,
+                        color = if(languageManager.getCurrentLanguage() == "kk") Color.White else PurpleLight,
                         modifier = Modifier
-                            .clickable {  }
+                            .clickable {
+                                languageManager.setLanguage("ru")
+                                languageManager.restartActivity()
+                            }
                     )
                 }
 

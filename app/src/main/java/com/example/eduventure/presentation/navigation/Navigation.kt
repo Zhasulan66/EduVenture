@@ -59,7 +59,8 @@ fun Navigation() {
         //HomeScreen
         composable(route = Screen.HomeScreen.route) {
             HomeScreen(
-                navController = navController
+                navController = navController,
+                languageManager = languageManager
             )
         }
 
@@ -80,6 +81,13 @@ fun Navigation() {
         //ProfileScreen
         composable(route = Screen.ProfileScreen.route) {
             ProfileScreen(
+                navController = navController
+            )
+        }
+
+        //NewsInfoScreen
+        composable(route = Screen.NewsInfoScreen.route) {
+            NewsInfoScreen(
                 navController = navController
             )
         }
