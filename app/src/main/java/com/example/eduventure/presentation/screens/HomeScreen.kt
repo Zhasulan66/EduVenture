@@ -125,7 +125,6 @@ fun HomeScreen(
         when (newsState) {
             is Resource.Loading -> {
                 LoadingScreen()
-                viewModel.fetchAllNews()
             }
 
             is Resource.Error -> {
@@ -141,7 +140,9 @@ fun HomeScreen(
                 val newsList = (newsState as Resource.Success<List<News>>).data
                 NewsListScreen(navController, newsList)
             }
-            else -> {}
+            else -> {
+                viewModel.fetchAllNews()
+            }
         }
 
         NavigationView(
@@ -173,7 +174,7 @@ fun NewsListScreen(
             NewsCard(
                 newsList[index]
             ) {
-                navController.navigate(Screen.NewsInfoScreen.route)
+                navController.navigate(Screen.NewsInfoScreen.route + "/${newsList[index].id}")
             }
             Spacer(modifier = Modifier.height(40.dp))
         }

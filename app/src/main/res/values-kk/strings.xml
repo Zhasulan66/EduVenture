@@ -19,4 +19,11 @@
     <string name="retry">Kaitadan</string>
     <string name="loading">Kutiniz</string>
     <string name="loading_failed">Jukteu mumkin emes</string>
+    <string name="register_continue">Zhaslgastyru</string>
+    <string name="enter_verify_code">Rastau kodyn engiziniz</string>
+    <string name="email_sent_code">Poshtaga 4 tanbaly kod zhiberildi</string>
+    <string name="send_code_again">Kodtty kaittan zhiberu</string>
+    <string name="enter_email">Ozinizdin akauyntynyzdy zhazynyz</string>
+    <string name="create_new_password">Zhana kupiasoz oilap tabynyz</string>
+    <string name="confirm_password">Kupia sozdi rastanyz</string>
 </resources>

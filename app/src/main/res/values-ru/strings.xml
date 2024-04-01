@@ -19,4 +19,11 @@
     <string name="retry">Снова</string>
     <string name="loading">Загрузка</string>
     <string name="loading_failed">Не удалось загрузить</string>
+    <string name="register_continue">Продолжить</string>
+    <string name="enter_verify_code">Введите код подтверждения</string>
+    <string name="email_sent_code">На адрес был отправлен 4-значный код</string>
+    <string name="send_code_again">Отправить код еще раз</string>
+    <string name="enter_email">Напишите свой адрес электронной почты</string>
+    <string name="create_new_password">Придумайте новый пароль</string>
+    <string name="confirm_password">Подтвердите Пароль</string>
 </resources>

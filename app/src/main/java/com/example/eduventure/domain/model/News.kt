@@ -3,9 +3,9 @@ package com.example.eduventure.domain.model
 data class News(
     val id: Int,
     val title: String,
-    val photo1: String,
-    val photo2: String,
-    val photo3: String,
+    val photo1: String?,
+    val photo2: String?,
+    val photo3: String?,
     val description: String,
     val date: String,
 )

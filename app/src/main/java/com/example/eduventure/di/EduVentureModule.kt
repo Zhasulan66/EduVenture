@@ -29,7 +29,7 @@ object EduVentureModule {
             .build()
 
         return Retrofit.Builder()
-            .baseUrl("https://blogkz-5e22e29f32e9.herokuapp.com")
+            .baseUrl("https://eduventure-304c3e9f6fb1.herokuapp.com")
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()

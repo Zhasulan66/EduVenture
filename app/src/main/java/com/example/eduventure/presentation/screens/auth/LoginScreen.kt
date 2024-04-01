@@ -1,4 +1,4 @@
-package com.example.eduventure.presentation.screens
+package com.example.eduventure.presentation.screens.auth
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -51,45 +51,51 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.eduventure.R
-import com.example.eduventure.common.Constants
+import com.example.eduventure.common.Constants.Companion.INTER_FONT_FAMILY
+import com.example.eduventure.domain.model.Auth.TokenResponse
+import com.example.eduventure.domain.model.Auth.UserLogin
 import com.example.eduventure.domain.model.Auth.UserRequest
 import com.example.eduventure.domain.model.Auth.UserResponse
+import com.example.eduventure.domain.model.Auth.VerificationRequest
 import com.example.eduventure.domain.model.Resource
+import com.example.eduventure.presentation.LanguageManager
 import com.example.eduventure.presentation.navigation.Screen
+import com.example.eduventure.presentation.screens.ErrorScreen
+import com.example.eduventure.presentation.screens.LoadingScreen
 import com.example.eduventure.presentation.ui.theme.BlueDark
 import com.example.eduventure.presentation.ui.theme.PurpleLight
 import com.example.eduventure.presentation.viewmodels.AuthViewModel
 
-
 @Composable
-fun RegistrationScreen(
+fun LoginScreen(
     navController: NavController,
+    languageManager: LanguageManager
 ) {
+
     val viewModel = hiltViewModel<AuthViewModel>()
-    val registrationState by viewModel.registrationState.collectAsState()
+    val loginState by viewModel.loginState.collectAsState()
 
     Box(modifier = Modifier
         .fillMaxSize()){
 
-        when(registrationState){
+        when(loginState){
             is Resource.Initial -> {
-                RegisterFields(navController, viewModel)
+                LoginFields(navController, languageManager, viewModel)
             }
             is Resource.Loading -> {
                 LoadingScreen()
             }
             is Resource.Error -> {
                 ErrorScreen(modifier = Modifier, retryAction = {
-                    navController.popBackStack()
+                    navController.navigate(Screen.LoginScreen.route)
                 })
             }
             is Resource.Success -> {
-                val userResponse = (registrationState as Resource.Success<UserResponse>).data
-                Toast.makeText(LocalContext.current, "Regiter succesfully!", Toast.LENGTH_SHORT).show()
-                navController.navigate(Screen.LoginScreen.route){
+                val tokenResponse = (loginState as Resource.Success<TokenResponse>).data
+                navController.navigate(Screen.HomeScreen.route){
                     popUpTo(Screen.RegistrationScreen.route){ inclusive = true }
                 }
-                viewModel.registrationSuccess()
+                viewModel.loginSuccess()
 
             }
         }
@@ -98,62 +104,25 @@ fun RegistrationScreen(
 
 }
 
-// Function to validate email
-internal fun isValidEmail(email: String): Boolean {
-    val emailPattern = Regex("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+")
-    return email.matches(emailPattern)
-}
-
-fun isPasswordValid(password: String): Boolean {
-    // Check minimum length
-    if (password.length < 8) {
-        return false
-    }
-
-    // Check if password contains numbers
-    val containsNumber = password.any { it.isDigit() }
-    if (!containsNumber) {
-        return false
-    }
-
-    // Check if password is entirely numeric
-    if (password.all { it.isDigit() }) {
-        return false
-    }
-
-    // Define common patterns to avoid
-    val commonPatterns = listOf("123", "password", "qwerty", "abc", "admin")
-
-    // Check if password contains any common patterns
-    if (commonPatterns.any { password.contains(it, ignoreCase = true) }) {
-        return false
-    }
-
-    // If all criteria pass, return true
-    return true
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterFields(
+fun LoginFields(
     navController: NavController,
+    languageManager: LanguageManager,
     viewModel: AuthViewModel
 ){
-    var userName by remember { mutableStateOf("") }
     var userEmail by remember { mutableStateOf("") }
-    var userPhone by remember { mutableStateOf("") }
     var userPassword by remember { mutableStateOf("") }
     var isPasswordHide by remember { mutableStateOf(true) }
 
-    var isUserNameIncorrect by remember { mutableStateOf(false) }
     var isUserEmailIncorrect by remember { mutableStateOf(false) }
-    var isUserPhoneIncorrect by remember { mutableStateOf(false) }
     var isUserPasswordIncorrect by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
     ) {
+
         Image(
             painter = painterResource(R.drawable.city_bg),
             contentDescription = "img",
@@ -191,51 +160,57 @@ fun RegisterFields(
             ) {
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
-                    text = stringResource(R.string.registration),
+                    text = stringResource(R.string.entrance),
                     fontSize = 32.sp,
-                    fontFamily = Constants.INTER_FONT_FAMILY,
+                    fontFamily = INTER_FONT_FAMILY,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.White,
                     modifier = Modifier
                         .align(alignment = Alignment.CenterHorizontally)
                 )
-                Spacer(modifier = Modifier.height(32.dp))
-
-                //Username
-                TextField(
-                    value = userName,
-                    onValueChange = { text ->
-                        userName = text
-                    },
-                    textStyle = TextStyle(
-                        color = Color.White
-                    ),
+                Spacer(modifier = Modifier.height(20.dp))
+                Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .border(
-                            width = 1.dp,
-                            color = if(isUserNameIncorrect) Color.Red else Color.White,
-                            shape = RoundedCornerShape(50)
-                        ),
-                    placeholder = {
-                        Text(
-                            text = stringResource(id = R.string.username),
-                            fontSize = 14.sp,
-                            fontFamily = Constants.INTER_FONT_FAMILY,
-                            color = Color.White,
-                        )
-                    },
-                    singleLine = true,
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Text(
+                        text = "Kaz",
+                        fontSize = 16.sp,
+                        fontFamily = INTER_FONT_FAMILY,
+                        fontWeight = FontWeight.SemiBold,
+                        color = if (languageManager.getCurrentLanguage() == "kk") PurpleLight else Color.White,
+                        modifier = Modifier
+                            .clickable {
+                                languageManager.setLanguage("kk")
+                                languageManager.restartActivity()
+                            }
                     )
-                )
-                Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = "Рус",
+                        fontSize = 16.sp,
+                        fontFamily = INTER_FONT_FAMILY,
+                        fontWeight = FontWeight.SemiBold,
+                        color = if (languageManager.getCurrentLanguage() == "kk") Color.White else PurpleLight,
+                        modifier = Modifier
+                            .clickable {
+                                languageManager.setLanguage("ru")
+                                languageManager.restartActivity()
+                            }
+                    )
+                }
 
-                //userEmail
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    text = stringResource(R.string.mail),
+                    fontSize = 20.sp,
+                    fontFamily = INTER_FONT_FAMILY,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(20.dp))
                 TextField(
                     value = userEmail,
                     onValueChange = { text ->
@@ -256,7 +231,7 @@ fun RegisterFields(
                         Text(
                             text = stringResource(id = R.string.mail_placeholder),
                             fontSize = 14.sp,
-                            fontFamily = Constants.INTER_FONT_FAMILY,
+                            fontFamily = INTER_FONT_FAMILY,
                             color = Color.White,
                         )
                     },
@@ -267,43 +242,17 @@ fun RegisterFields(
                         unfocusedIndicatorColor = Color.Transparent
                     )
                 )
-                Spacer(modifier = Modifier.height(32.dp))
 
-                //userPhone
-                TextField(
-                    value = userPhone,
-                    onValueChange = { text ->
-                        userPhone = text
-                    },
-                    textStyle = TextStyle(
-                        color = Color.White
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .border(
-                            width = 1.dp,
-                            color = if(isUserPhoneIncorrect) Color.Red else Color.White,
-                            shape = RoundedCornerShape(50)
-                        ),
-                    placeholder = {
-                        Text(
-                            text = stringResource(id = R.string.phone_number),
-                            fontSize = 14.sp,
-                            fontFamily = Constants.INTER_FONT_FAMILY,
-                            color = Color.White,
-                        )
-                    },
-                    singleLine = true,
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
-                    )
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    text = stringResource(R.string.password),
+                    fontSize = 20.sp,
+                    fontFamily = INTER_FONT_FAMILY,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White,
+                    modifier = Modifier.fillMaxWidth()
                 )
-                Spacer(modifier = Modifier.height(32.dp))
-
-                //password
+                Spacer(modifier = Modifier.height(20.dp))
                 TextField(
                     value = userPassword,
                     onValueChange = { text ->
@@ -324,7 +273,7 @@ fun RegisterFields(
                         Text(
                             text = stringResource(id = R.string.password),
                             fontSize = 14.sp,
-                            fontFamily = Constants.INTER_FONT_FAMILY,
+                            fontFamily = INTER_FONT_FAMILY,
                             color = Color.White,
                         )
                     },
@@ -351,9 +300,29 @@ fun RegisterFields(
                         unfocusedIndicatorColor = Color.Transparent
                     )
                 )
-                Spacer(modifier = Modifier.height(52.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-                //Enter button
+                //Forgot password btn
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Text(
+                        text = stringResource(R.string.forgot_password),
+                        fontSize = 16.sp,
+                        fontFamily = INTER_FONT_FAMILY,
+                        fontWeight = FontWeight.SemiBold,
+                        color = PurpleLight,
+                        textAlign = TextAlign.End,
+                        modifier = Modifier
+                            .clickable {
+                                navController.navigate(Screen.ForgotPasswordScreen.route)
+                            }
+                        )
+                }
+                Spacer(modifier = Modifier.height(40.dp))
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -361,12 +330,11 @@ fun RegisterFields(
                         .clip(RoundedCornerShape(50))
                         .background(
                             brush = Brush.horizontalGradient(
-                                listOf(PurpleLight, BlueDark))
+                                listOf(PurpleLight, BlueDark)
+                            )
                         )
                         .clickable {
-                            isUserNameIncorrect = userName.isEmpty()
                             isUserEmailIncorrect = userEmail.isEmpty()
-                            isUserPhoneIncorrect = userEmail.isEmpty()
                             isUserPasswordIncorrect = userPassword.isEmpty()
                             if (!isValidEmail(userEmail)) {
                                 isUserEmailIncorrect = true
@@ -374,19 +342,17 @@ fun RegisterFields(
                             if (!isPasswordValid(userPassword)) {
                                 isUserPasswordIncorrect = true
                             }
-                            if (!isUserNameIncorrect && !isUserEmailIncorrect &&
-                                !isUserPhoneIncorrect && !isUserPasswordIncorrect
-                            ) {
-                                val userRequest = UserRequest(userName, userEmail, userPassword)
-                                viewModel.registerUser(userRequest)
+                            if (!isUserEmailIncorrect && !isUserPasswordIncorrect) {
+                                viewModel.loginUser(UserLogin(userEmail, userPassword))
                             }
+
                         },
                     contentAlignment = Alignment.Center
-                ){
+                ) {
                     Text(
                         text = stringResource(R.string.enter),
                         fontSize = 20.sp,
-                        fontFamily = Constants.INTER_FONT_FAMILY,
+                        fontFamily = INTER_FONT_FAMILY,
                         fontWeight = FontWeight.SemiBold,
                         color = Color.White,
                         modifier = Modifier.fillMaxWidth(),
@@ -399,25 +365,25 @@ fun RegisterFields(
                     modifier = Modifier
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
-                ){
+                ) {
                     Text(
-                        text = stringResource(R.string.already_have_account),
+                        text = stringResource(R.string.dont_have_account),
                         fontSize = 16.sp,
-                        fontFamily = Constants.INTER_FONT_FAMILY,
+                        fontFamily = INTER_FONT_FAMILY,
                         fontWeight = FontWeight.SemiBold,
                         color = Color.White,
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = stringResource(R.string.enter),
+                        text = stringResource(R.string.registration),
                         fontSize = 16.sp,
-                        fontFamily = Constants.INTER_FONT_FAMILY,
+                        fontFamily = INTER_FONT_FAMILY,
                         fontWeight = FontWeight.SemiBold,
                         color = PurpleLight,
                         modifier = Modifier
                             .clickable {
-                                navController.navigate(Screen.LoginScreen.route){
-                                    popUpTo(Screen.RegistrationScreen.route){ inclusive = true }
+                                navController.navigate(Screen.RegistrationScreen.route) {
+                                    popUpTo(Screen.LoginScreen.route) { inclusive = true }
                                 }
                             }
 
@@ -425,9 +391,5 @@ fun RegisterFields(
                 }
             }
         }
-
-
-
-
     }
 }

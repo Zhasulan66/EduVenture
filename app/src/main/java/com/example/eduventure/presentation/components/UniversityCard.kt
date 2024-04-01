@@ -58,7 +58,7 @@ fun UniversityCard(
                 .padding(8.dp)
         ){
             Image(
-                painter = if(university.logo.isNotEmpty()) {
+                painter = if(university.logo != null) {
                     rememberAsyncImagePainter(
                         model = university.logo,
                         placeholder = painterResource(id = R.drawable.img_placeholder),

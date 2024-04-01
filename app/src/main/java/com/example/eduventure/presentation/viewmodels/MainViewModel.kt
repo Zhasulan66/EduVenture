@@ -20,11 +20,12 @@ class MainViewModel @Inject constructor(
     val news: StateFlow<List<News>> = _news*/
 
     //news
-    private val _newsState = MutableStateFlow<Resource<List<News>>>(Resource.Loading)
+    private val _newsState = MutableStateFlow<Resource<List<News>>>(Resource.Initial)
     val newsState: StateFlow<Resource<List<News>>> = _newsState.asStateFlow()
 
     fun fetchAllNews() {
         viewModelScope.launch {
+            _newsState.value = Resource.Loading
             try {
                 val newsList = repository.getAllNews()
                 _newsState.value = Resource.Success(newsList)
@@ -60,6 +61,22 @@ class MainViewModel @Inject constructor(
                 _internshipState.value = Resource.Success(internshipList)
             } catch (e: Exception) {
                 _internshipState.value = Resource.Error(e)
+            }
+        }
+    }
+
+    //news info
+    private val _newsInfoState = MutableStateFlow<Resource<News>>(Resource.Initial)
+    val newsInfoState: StateFlow<Resource<News>> = _newsInfoState.asStateFlow()
+
+    fun fetchNewsById(id: Int) {
+        viewModelScope.launch {
+            _newsInfoState.value = Resource.Loading
+            try {
+                val news = repository.getNewsById(id)
+                _newsInfoState.value = Resource.Success(news)
+            } catch (e: Exception) {
+                _newsInfoState.value = Resource.Error(e)
             }
         }
     }

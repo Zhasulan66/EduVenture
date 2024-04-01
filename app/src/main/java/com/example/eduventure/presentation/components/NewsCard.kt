@@ -55,7 +55,7 @@ fun NewsCard(
 
         ){
             Image(
-                painter = if(news.photo1.isNotEmpty()) {
+                painter = if(news.photo1 != null) {
                     rememberAsyncImagePainter(
                         model = news.photo1,
                         placeholder = painterResource(id = R.drawable.img_placeholder),

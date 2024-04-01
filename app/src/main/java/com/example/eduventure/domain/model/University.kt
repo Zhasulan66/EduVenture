@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class University(
     val id: Int,
     val name: String,
-    val logo: String,
+    val logo: String?,
     val country: String,
     val city: String,
     val tuition: String,
