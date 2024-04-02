@@ -2,6 +2,7 @@ package com.example.eduventure.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,7 +32,8 @@ import com.example.eduventure.domain.model.University
 
 @Composable
 fun InternshipCard(
-    internship: Internship
+    internship: Internship,
+    onClick: () -> Unit
 ){
 
     Box(
@@ -44,6 +46,9 @@ fun InternshipCard(
             )
             .clip(RoundedCornerShape(12.dp))
             .background(Color.White)
+            .clickable {
+                onClick()
+            }
     ){
         Row(
             modifier = Modifier

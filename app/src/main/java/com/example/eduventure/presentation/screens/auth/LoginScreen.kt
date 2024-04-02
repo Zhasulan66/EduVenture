@@ -91,11 +91,12 @@ fun LoginScreen(
                 })
             }
             is Resource.Success -> {
-                val tokenResponse = (loginState as Resource.Success<TokenResponse>).data
+                val tokenResponse = (loginState as Resource.Success<TokenResponse>).data.authToken
                 navController.navigate(Screen.HomeScreen.route){
                     popUpTo(Screen.RegistrationScreen.route){ inclusive = true }
                 }
                 viewModel.loginSuccess()
+                viewModel.saveToken(tokenResponse)
 
             }
         }

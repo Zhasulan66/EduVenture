@@ -4,7 +4,9 @@ import com.example.eduventure.domain.model.*
 import com.example.eduventure.domain.model.Auth.*
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface EduVentureApiService {
@@ -41,6 +43,27 @@ interface EduVentureApiService {
 
     @GET("/api/news/{id}")
     suspend fun getNewsById(@Path("id") id: Int): News
+
+    @GET("/api/universities/{id}")
+    suspend fun getUniversityById(@Path("id") id: Int): University
+
+    @GET("/api/internships/{id}")
+    suspend fun getInternshipById(@Path("id") id: Int): Internship
+
+    @GET("/api/users/{id}")
+    suspend fun getUserById(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+    ): User
+
+    @PUT("/api/users/{id}/")
+    suspend fun updateUser(
+        @Header("Authorization") token: String,
+        @Path("id") id: Int,
+        @Body user: User
+    ): User
+
+
 
 
 }

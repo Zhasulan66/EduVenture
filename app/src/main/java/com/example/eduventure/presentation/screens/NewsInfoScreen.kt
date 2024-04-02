@@ -157,6 +157,7 @@ fun NewsInfoScreen(
 fun NewsSuccessScreen(
     news: News
 ) {
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -165,28 +166,58 @@ fun NewsSuccessScreen(
         Spacer(modifier = Modifier.height(100.dp))
 
         var imageList by remember { mutableStateOf(emptyList<String>()) }
-        if(news.photo1 != null){ imageList += news.photo1}
-        if(news.photo2 != null){ imageList += news.photo2}
-        if(news.photo3 != null){ imageList += news.photo3}
+        if(imageList.isEmpty()){
+            if(news.photo1 != null) imageList += news.photo1
+            if(news.photo2 != null) imageList += news.photo2
+            if(news.photo3 != null) imageList += news.photo3
+        }
+
         val pagerState = rememberPagerState { imageList.size }
-        HorizontalPager(
-            state = pagerState,
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(1f),
-            key = { imageList[it] }
-        ) { index ->
-            Image(
-                painter = rememberAsyncImagePainter(
-                    model = imageList[index],
-                    placeholder = painterResource(id = R.drawable.img_placeholder),
-                ),
-                contentDescription = "img",
+                .aspectRatio(1f)
+        ) {
+            HorizontalPager(
+                state = pagerState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f),
-                contentScale = ContentScale.FillBounds,
-            )
+                key = { imageList[it] }
+            ) { index ->
+                Image(
+                    painter = rememberAsyncImagePainter(
+                        model = imageList[index],
+                        placeholder = painterResource(id = R.drawable.img_placeholder),
+                    ),
+                    contentDescription = "img",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f),
+                    contentScale = ContentScale.FillBounds,
+                )
+            }
+            if (imageList.size > 1) {
+                Row(
+                    modifier = Modifier
+                        .align(alignment = Alignment.BottomCenter)
+                        .offset(y = (-16).dp)
+                ) {
+                    repeat(imageList.size) { index ->
+                        Box(
+                            modifier = Modifier
+                                .size(10.dp)
+                                .clip(CircleShape)
+                                .background(if (pagerState.currentPage == index) Color.White else Color.Transparent)
+                                .border(
+                                    border = BorderStroke(2.dp, Color.White),
+                                    shape = CircleShape
+                                )
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                    }
+                }
+            }
         }
         Spacer(modifier = Modifier.height(12.dp))
 

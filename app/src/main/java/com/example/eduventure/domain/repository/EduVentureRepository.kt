@@ -27,4 +27,12 @@ interface EduVentureRepository {
 
     suspend fun getNewsById(id: Int): News
 
+    suspend fun getUniversityById(id: Int): University
+
+    suspend fun getInternshipById(id: Int): Internship
+
+    suspend fun getUserById(token: String, id: Int): User
+
+    suspend fun updateUser(token: String, id: Int, user: User): User
+
 }

@@ -81,5 +81,60 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    //university info
+    private val _universityInfoState = MutableStateFlow<Resource<University>>(Resource.Initial)
+    val universityInfoState: StateFlow<Resource<University>> = _universityInfoState.asStateFlow()
+
+    fun fetchUniversityById(id: Int) {
+        viewModelScope.launch {
+            _universityInfoState.value = Resource.Loading
+            try {
+                val university = repository.getUniversityById(id)
+                _universityInfoState.value = Resource.Success(university)
+            } catch (e: Exception) {
+                _universityInfoState.value = Resource.Error(e)
+            }
+        }
+    }
+
+    //internship info
+    private val _internshipInfoState = MutableStateFlow<Resource<Internship>>(Resource.Initial)
+    val internshipInfoState: StateFlow<Resource<Internship>> = _internshipInfoState.asStateFlow()
+
+    fun fetchInternshipById(id: Int) {
+        viewModelScope.launch {
+            _internshipInfoState.value = Resource.Loading
+            try {
+                val internship = repository.getInternshipById(id)
+                _internshipInfoState.value = Resource.Success(internship)
+            } catch (e: Exception) {
+                _internshipInfoState.value = Resource.Error(e)
+            }
+        }
+    }
+
+    //user info
+    private val _userInfoState = MutableStateFlow<Resource<User>>(Resource.Initial)
+    val userInfoState: StateFlow<Resource<User>> = _userInfoState.asStateFlow()
+
+    fun fetchUserById(token: String, id: Int) {
+        viewModelScope.launch {
+            _userInfoState.value = Resource.Loading
+            try {
+                val user = repository.getUserById("Token $token",id)
+                _userInfoState.value = Resource.Success(user)
+            } catch (e: Exception) {
+                _userInfoState.value = Resource.Error(e)
+            }
+        }
+    }
+
+    fun updateUser(token: String, id: Int, user: User) {
+        viewModelScope.launch {
+            val updatedUser = repository.updateUser("Token $token",id, user)
+
+        }
+    }
+
 
 }

@@ -1,7 +1,10 @@
 package com.example.eduventure.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,15 +18,17 @@ import com.example.eduventure.presentation.screens.auth.LoginScreen
 import com.example.eduventure.presentation.screens.auth.RegistrationScreen
 import com.example.eduventure.presentation.screens.auth.VerifyEmailScreen
 import com.example.eduventure.presentation.screens.auth.VerifyPasswordScreen
+import com.example.eduventure.presentation.viewmodels.AuthViewModel
 
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
     val languageManager = LanguageManager(LocalContext.current)
 
+
     NavHost(
         navController = navController,
-        startDestination = Screen.LoginScreen.route
+        startDestination = Screen.SplashScreen.route
     ) {
 
         //SplashScreen
@@ -149,6 +154,38 @@ fun Navigation() {
             NewsInfoScreen(
                 navController = navController,
                 newsId = entry.arguments!!.getInt("id")
+            )
+        }
+
+        //UniversityInfoScreen
+        composable(route = Screen.UniversityInfoScreen.route + "/{id}",
+            arguments = listOf(
+                navArgument("id"){
+                    type = NavType.IntType
+                    defaultValue = 0
+                    nullable = false
+                }
+            )
+        ) { entry ->
+            UniversityInfoScreen(
+                navController = navController,
+                universityId = entry.arguments!!.getInt("id")
+            )
+        }
+
+        //InternshipInfoScreen
+        composable(route = Screen.InternshipInfoScreen.route + "/{id}",
+            arguments = listOf(
+                navArgument("id"){
+                    type = NavType.IntType
+                    defaultValue = 0
+                    nullable = false
+                }
+            )
+        ) { entry ->
+            InternshipInfoScreen(
+                navController = navController,
+                internshipId = entry.arguments!!.getInt("id")
             )
         }
 

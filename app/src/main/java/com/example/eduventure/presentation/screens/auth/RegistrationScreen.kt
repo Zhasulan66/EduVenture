@@ -88,7 +88,6 @@ fun RegistrationScreen(
             }
             is Resource.Success -> {
                 val userResponse = (registrationState as Resource.Success<UserResponse>).data
-                Toast.makeText(LocalContext.current, "Regiter succesfully!", Toast.LENGTH_SHORT).show()
                 navController.navigate(Screen.VerifyEmailScreen.route + "/${userResponse.email}"){
                     popUpTo(Screen.RegistrationScreen.route){ inclusive = true }
                 }

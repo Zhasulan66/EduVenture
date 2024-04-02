@@ -1,6 +1,7 @@
 package com.example.eduventure.presentation.screens.auth
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -36,6 +37,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -80,6 +82,7 @@ fun VerifyEmailScreen(
             })
         }
         is Resource.Success -> {
+            Toast.makeText(LocalContext.current, "Regiter succesfully!", Toast.LENGTH_SHORT).show()
             navController.navigate(Screen.LoginScreen.route){
                 popUpTo(Screen.VerifyEmailScreen.route){
                     inclusive = true

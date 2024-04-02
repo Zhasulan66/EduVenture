@@ -50,6 +50,7 @@ import com.example.eduventure.domain.model.University
 import com.example.eduventure.presentation.components.NavigationView
 import com.example.eduventure.presentation.components.NewsCard
 import com.example.eduventure.presentation.components.UniversityCard
+import com.example.eduventure.presentation.navigation.Screen
 import com.example.eduventure.presentation.ui.theme.PurpleDark
 import com.example.eduventure.presentation.ui.theme.PurpleLight
 import com.example.eduventure.presentation.viewmodels.MainViewModel
@@ -102,7 +103,7 @@ fun UniversityScreen(
                 ErrorScreen(
                     modifier = Modifier,
                     retryAction = {
-                        navController.popBackStack()
+                        navController.navigate(Screen.UniversityScreen.route)
                     }
                 )
             }
@@ -215,7 +216,9 @@ fun UniversityListScreen(
         items(universityList.size) { index ->
             UniversityCard(
                 universityList[index]
-            ) {}
+            ) {
+                navController.navigate(Screen.UniversityInfoScreen.route +"/${universityList[index].id}")
+            }
 
             Spacer(modifier = Modifier.height(20.dp))
         }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -27,12 +29,16 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.eduventure.R
 import com.example.eduventure.presentation.navigation.Screen
+import com.example.eduventure.presentation.viewmodels.AuthViewModel
 import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen (
     navController: NavController
 ){
+    val viewModel = hiltViewModel<AuthViewModel>()
+    val savedToken: String? by viewModel.readToken().collectAsState(initial = null)
+
     val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.walking_anim))
     Column(
         modifier = Modifier.fillMaxSize()
@@ -59,7 +65,7 @@ fun SplashScreen (
     // Navigate to the home screen after a delay
     LaunchedEffect(key1 = true) {
         delay(2000)
-        navController.navigate(Screen.LoginScreen.route) {
+        navController.navigate(if(savedToken == null) Screen.LoginScreen.route else Screen.HomeScreen.route) {
             popUpTo(Screen.SplashScreen.route) {
                 inclusive = true
             }

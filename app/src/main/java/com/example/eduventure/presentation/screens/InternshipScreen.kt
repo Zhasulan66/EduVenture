@@ -47,6 +47,7 @@ import com.example.eduventure.domain.model.University
 import com.example.eduventure.presentation.components.InternshipCard
 import com.example.eduventure.presentation.components.NavigationView
 import com.example.eduventure.presentation.components.UniversityCard
+import com.example.eduventure.presentation.navigation.Screen
 import com.example.eduventure.presentation.ui.theme.PurpleDark
 import com.example.eduventure.presentation.viewmodels.MainViewModel
 
@@ -201,7 +202,9 @@ fun InternshipListScreen(
             Spacer(modifier = Modifier.height(20.dp))
         }
         items(items = internshipList){ internship ->
-            InternshipCard(internship)
+            InternshipCard(internship){
+                navController.navigate(Screen.InternshipInfoScreen.route +"/${internship.id}")
+            }
             Spacer(modifier = Modifier.height(20.dp))
         }
         item{

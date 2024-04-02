@@ -17,6 +17,7 @@ import com.example.eduventure.domain.model.Auth.UserLogin
 import com.example.eduventure.domain.model.Auth.VerificationRequest
 import com.example.eduventure.domain.model.Auth.VerifyCodeRequest
 import com.example.eduventure.domain.model.Auth.VerifyCodeResponse
+import com.example.eduventure.domain.model.User
 import com.example.eduventure.domain.repository.EduVentureRepository
 
 class EduVentureRepositoryImpl(
@@ -65,5 +66,21 @@ class EduVentureRepositoryImpl(
 
     override suspend fun getNewsById(id: Int): News {
         return api.getNewsById(id)
+    }
+
+    override suspend fun getUniversityById(id: Int): University {
+        return api.getUniversityById(id)
+    }
+
+    override suspend fun getInternshipById(id: Int): Internship {
+        return api.getInternshipById(id)
+    }
+
+    override suspend fun getUserById(token: String, id: Int): User {
+        return api.getUserById(token, id)
+    }
+
+    override suspend fun updateUser(token: String, id: Int, user: User): User {
+        return api.updateUser(token, id, user)
     }
 }

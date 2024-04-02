@@ -1,5 +1,10 @@
 package com.example.eduventure.presentation.viewmodels
 
+import android.app.Application
+import android.content.Context
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.eduventure.domain.model.Auth.*
@@ -7,15 +12,19 @@ import com.example.eduventure.domain.model.*
 import com.example.eduventure.domain.repository.EduVentureRepository
 import com.example.eduventure.domain.model.Auth.VerifyCodeRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+val Context.dataStore by preferencesDataStore(name = "token_prefs")
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val repository: EduVentureRepository,
+    private val application: Application
 ) : ViewModel() {
 
     private val _registrationState = MutableStateFlow<Resource<UserResponse>>(Resource.Initial)
@@ -126,6 +135,34 @@ class AuthViewModel @Inject constructor(
 
     fun resetPasswordSuccess() {
         _resetPasswordState.value = Resource.Initial
+    }
+
+    private val tokenKey = stringPreferencesKey("token_key")
+
+    // Function to save token
+    fun saveToken(token: String) {
+        viewModelScope.launch {
+
+            application.dataStore.edit { preferences ->
+                preferences[tokenKey] = token
+            }
+        }
+    }
+
+    // Function to retrieve token
+    fun readToken(): Flow<String?> {
+        return application.dataStore.data.map { preferences ->
+            preferences[tokenKey]
+        }
+    }
+
+    // Function to delete token
+    fun deleteToken() {
+        viewModelScope.launch {
+            application.dataStore.edit { preferences ->
+                preferences.remove(tokenKey)
+            }
+        }
     }
 
 }
