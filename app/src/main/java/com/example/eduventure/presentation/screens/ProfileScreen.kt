@@ -99,7 +99,7 @@ fun ProfileScreen(
 
             is Resource.Success -> {
                 val user = (userInfoState as Resource.Success<User>).data
-                ProfileSuccessScreen(user, viewModel, savedToken!!, navController)
+                ProfileSuccessScreen(user, viewModel, savedToken, navController)
             }
 
             else -> {
@@ -147,7 +147,7 @@ fun ProfileScreen(
 fun ProfileSuccessScreen(
     user: User,
     viewModel: MainViewModel,
-    token: String,
+    token: String?,
     navController: NavController
 ){
 
@@ -379,7 +379,7 @@ fun ProfileSuccessScreen(
                         )
                     )
                     .clickable {
-                        viewModel.updateUser(token, user.id,
+                        viewModel.updateUser(token!!, user.id,
                             User(
                                 user.id,
                                 userEmail.ifEmpty { user.email },
