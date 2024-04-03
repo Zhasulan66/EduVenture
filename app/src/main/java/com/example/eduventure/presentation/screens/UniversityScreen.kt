@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -18,6 +19,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -44,6 +47,7 @@ import androidx.navigation.NavController
 import com.example.eduventure.R
 import com.example.eduventure.common.Constants
 import com.example.eduventure.common.Constants.Companion.INTER_FONT_FAMILY
+import com.example.eduventure.data.local.LocalCountryListData
 import com.example.eduventure.domain.model.News
 import com.example.eduventure.domain.model.Resource
 import com.example.eduventure.domain.model.University
@@ -55,7 +59,7 @@ import com.example.eduventure.presentation.ui.theme.PurpleDark
 import com.example.eduventure.presentation.ui.theme.PurpleLight
 import com.example.eduventure.presentation.viewmodels.MainViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun UniversityScreen(
     navController: NavController
@@ -86,7 +90,7 @@ fun UniversityScreen(
                 Text(
                     text = stringResource(id = R.string.universities),
                     fontSize = 20.sp,
-                    fontFamily = Constants.INTER_FONT_FAMILY,
+                    fontFamily = INTER_FONT_FAMILY,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.White,
                 )
@@ -96,7 +100,7 @@ fun UniversityScreen(
         when (universityState) {
             is Resource.Loading -> {
                 LoadingScreen()
-                viewModel.fetchAllUniversities()
+                viewModel.fetchAllUniversities("All")
             }
 
             is Resource.Error -> {
@@ -110,7 +114,7 @@ fun UniversityScreen(
 
             is Resource.Success -> {
                 val universityList = (universityState as Resource.Success<List<University>>).data
-                UniversityListScreen(navController, universityList)
+                UniversityListScreen(navController, universityList, viewModel)
             }
             else -> {}
         }
@@ -131,9 +135,20 @@ fun UniversityScreen(
 @Composable
 fun UniversityListScreen(
     navController: NavController,
-    universityList: List<University>
+    universityList: List<University>,
+    viewModel: MainViewModel
 ){
     var userSearch by remember { mutableStateOf("") }
+
+    var expandedCountry by remember { mutableStateOf(false) }
+    var selectedCountryOption by remember { mutableStateOf("All") }
+
+    val sortedUniversityList =
+        if(userSearch.isNotEmpty()) {
+            universityList.filter { university ->
+                university.name.startsWith(userSearch, ignoreCase = true)
+            }
+        } else universityList
 
     LazyColumn(
         modifier = Modifier
@@ -193,31 +208,59 @@ fun UniversityListScreen(
                     )
                 )
 
-                Box(
+                Column(
                     modifier = Modifier
                         .width(112.dp)
                         .fillMaxHeight()
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(PurpleDark)
-                        .clickable {  },
-                    contentAlignment = Alignment.Center
-                ){
-                    Text(
-                        text = "Japan",
-                        fontFamily = INTER_FONT_FAMILY,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.White
-                    )
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(112.dp)
+                            .fillMaxHeight()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(PurpleDark)
+                            .clickable { expandedCountry = true },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = selectedCountryOption,
+                            fontFamily = INTER_FONT_FAMILY,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = expandedCountry,
+                        onDismissRequest = { expandedCountry = false },
+                        modifier = Modifier
+                            .fillMaxWidth(0.4f)
+                            .fillMaxHeight(0.6f)
+                            .background(Color.White)
+                            .align(Alignment.End)
+                    ) {
+                        LocalCountryListData.countryList.forEach { country ->
+                            DropdownMenuItem(
+                                text = { Text(country) },
+                                onClick = {
+                                    selectedCountryOption = country
+                                    expandedCountry = false
+                                    viewModel.fetchAllUniversities(country = country)
+                                },
+                            )
+                        }
+                    }
+
                 }
             }
             Spacer(modifier = Modifier.height(20.dp))
         }
-        items(universityList.size) { index ->
+        items(sortedUniversityList.size) { index ->
             UniversityCard(
-                universityList[index]
+                sortedUniversityList[index]
             ) {
-                navController.navigate(Screen.UniversityInfoScreen.route +"/${universityList[index].id}")
+                navController.navigate(Screen.UniversityInfoScreen.route +"/${sortedUniversityList[index].id}")
             }
 
             Spacer(modifier = Modifier.height(20.dp))

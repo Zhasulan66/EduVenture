@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -17,6 +18,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -41,7 +44,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.eduventure.R
 import com.example.eduventure.common.Constants
+import com.example.eduventure.data.local.LocalCountryListData
 import com.example.eduventure.domain.model.Internship
+import com.example.eduventure.domain.model.Profession
 import com.example.eduventure.domain.model.Resource
 import com.example.eduventure.domain.model.University
 import com.example.eduventure.presentation.components.InternshipCard
@@ -59,6 +64,7 @@ fun InternshipScreen(
 
     val viewModel = hiltViewModel<MainViewModel>()
     val internshipState by viewModel.internshipState.collectAsState()
+    val professionState by viewModel.professionState.collectAsState()
 
     Box(
         modifier = Modifier
@@ -86,7 +92,8 @@ fun InternshipScreen(
         when (internshipState) {
             is Resource.Loading -> {
                 LoadingScreen()
-                viewModel.fetchAllInternships()
+                viewModel.fetchAllProfession()
+                viewModel.fetchAllInternships(0)
             }
 
             is Resource.Error -> {
@@ -100,7 +107,8 @@ fun InternshipScreen(
 
             is Resource.Success -> {
                 val internshipList = (internshipState as Resource.Success<List<Internship>>).data
-                InternshipListScreen(navController, internshipList)
+                val professionList = (professionState as Resource.Success<List<Profession>>).data
+                InternshipListScreen(navController, internshipList, professionList, viewModel)
             }
             else -> {}
         }
@@ -119,9 +127,22 @@ fun InternshipScreen(
 @Composable
 fun InternshipListScreen(
     navController: NavController,
-    internshipList: List<Internship>
+    internshipList: List<Internship>,
+    professionList: List<Profession>,
+    viewModel: MainViewModel
 ){
     var userSearch by remember { mutableStateOf("") }
+
+    var expandedProfession by remember { mutableStateOf(false) }
+    var selectedProfessionOption by remember { mutableStateOf("All") }
+
+    val sortedInternshipList =
+        if(userSearch.isNotEmpty()) {
+            internshipList.filter { internship ->
+                internship.title.startsWith(userSearch, ignoreCase = true)
+            }
+        } else internshipList
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -181,27 +202,63 @@ fun InternshipListScreen(
                     )
                 )
 
-                Box(
+                Column(
                     modifier = Modifier
                         .width(112.dp)
                         .fillMaxHeight()
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(PurpleDark)
-                        .clickable {  },
-                    contentAlignment = Alignment.Center
-                ){
-                    Text(
-                        text = "IT",
-                        fontFamily = Constants.INTER_FONT_FAMILY,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.White
-                    )
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(112.dp)
+                            .fillMaxHeight()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(PurpleDark)
+                            .clickable { expandedProfession = true },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = selectedProfessionOption,
+                            fontFamily = Constants.INTER_FONT_FAMILY,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White
+                        )
+                    }
+
+                    DropdownMenu(
+                        expanded = expandedProfession,
+                        onDismissRequest = { expandedProfession = false },
+                        modifier = Modifier
+                            .fillMaxWidth(0.4f)
+                            .fillMaxHeight(0.6f)
+                            .background(Color.White)
+                            .align(Alignment.End)
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("All") },
+                            onClick = {
+                                selectedProfessionOption = "All"
+                                expandedProfession = false
+                                viewModel.fetchAllInternships(profession = 0)
+                            },
+                        )
+                        professionList.forEach { profession ->
+                            DropdownMenuItem(
+                                text = { Text(profession.name) },
+                                onClick = {
+                                    selectedProfessionOption = profession.name
+                                    expandedProfession = false
+                                    viewModel.fetchAllInternships(profession = profession.id)
+                                },
+                            )
+                        }
+                    }
+
                 }
             }
             Spacer(modifier = Modifier.height(20.dp))
         }
-        items(items = internshipList){ internship ->
+        items(items = sortedInternshipList){ internship ->
             InternshipCard(internship){
                 navController.navigate(Screen.InternshipInfoScreen.route +"/${internship.id}")
             }

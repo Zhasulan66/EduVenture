@@ -2,6 +2,9 @@ package com.example.eduventure.domain.repository
 
 import com.example.eduventure.domain.model.*
 import com.example.eduventure.domain.model.Auth.*
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import retrofit2.Call
 
 interface EduVentureRepository {
 
@@ -21,9 +24,10 @@ interface EduVentureRepository {
 
     suspend fun getAllNews(): List<News>
 
-    suspend fun getAllUniversities(): List<University>
+    suspend fun getAllUniversities(country: String): List<University>
 
-    suspend fun getAllInternships(): List<Internship>
+    suspend fun getAllInternships(profession: Int?): List<Internship>
+    suspend fun getAllProfessions(): List<Profession>
 
     suspend fun getNewsById(id: Int): News
 
@@ -31,8 +35,16 @@ interface EduVentureRepository {
 
     suspend fun getInternshipById(id: Int): Internship
 
-    suspend fun getUserById(token: String, id: Int): User
+    suspend fun getUserByToken(token: String): User
 
-    suspend fun updateUser(token: String, id: Int, user: User): User
+    suspend fun updateUser(
+        token: String,
+        pathId: Int,
+        id: RequestBody,
+        email: RequestBody,
+        username: RequestBody,
+        phoneNum: RequestBody?,
+        photo: MultipartBody.Part?
+    ): Call<User>
 
 }

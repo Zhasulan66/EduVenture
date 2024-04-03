@@ -1,5 +1,12 @@
 package com.example.eduventure.presentation.screens
 
+import android.content.ContentResolver
+import android.content.Context
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,7 +24,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,24 +43,24 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import coil.imageLoader
+import coil.request.ImageRequest
 import com.example.eduventure.R
 import com.example.eduventure.common.Constants
-import com.example.eduventure.domain.model.Internship
 import com.example.eduventure.domain.model.Resource
 import com.example.eduventure.domain.model.User
 import com.example.eduventure.presentation.components.NavigationView
@@ -64,19 +70,27 @@ import com.example.eduventure.presentation.ui.theme.PurpleDark
 import com.example.eduventure.presentation.ui.theme.PurpleLight
 import com.example.eduventure.presentation.viewmodels.AuthViewModel
 import com.example.eduventure.presentation.viewmodels.MainViewModel
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.IOException
+import java.io.InputStream
 
 
 @Composable
 fun ProfileScreen(
     navController: NavController
-){
+) {
 
     val viewModel = hiltViewModel<MainViewModel>()
     val authViewModel = hiltViewModel<AuthViewModel>()
     val userInfoState by viewModel.userInfoState.collectAsState()
 
     val savedToken: String? by authViewModel.readToken().collectAsState(initial = null)
-    
+
 
     Box(
         modifier = Modifier
@@ -104,12 +118,12 @@ fun ProfileScreen(
 
             else -> {
                 savedToken?.let {
-                    viewModel.fetchUserById(it, 2)
+                    viewModel.fetchUserByToken(it)
                 }
 
             }
         }
-        
+
 
         //exit button
         Box(
@@ -124,7 +138,7 @@ fun ProfileScreen(
                     authViewModel.deleteToken()
                 },
             contentAlignment = Alignment.Center
-        ){
+        ) {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_exit_to_app_24),
                 contentDescription = "icon",
@@ -132,7 +146,7 @@ fun ProfileScreen(
             )
         }
 
-        
+
 
         NavigationView(
             modifier = Modifier.align(Alignment.BottomCenter),
@@ -142,6 +156,16 @@ fun ProfileScreen(
     }
 }
 
+fun loadPicture(uri: Uri, context: Context) {
+    val imageLoader = context.imageLoader
+    val request = ImageRequest.Builder(context)
+        .data(uri)
+        .allowHardware(false) // Disable hardware bitmaps.
+        .build()
+
+    imageLoader.enqueue(request)
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileSuccessScreen(
@@ -149,11 +173,25 @@ fun ProfileSuccessScreen(
     viewModel: MainViewModel,
     token: String?,
     navController: NavController
-){
+) {
 
     var userEmail by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }
     var userPhone by remember { mutableStateOf("") }
+    var userImage by remember { mutableStateOf<String?>(null) }
+
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+    val context = LocalContext.current
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = {
+            imageUri = it
+        }
+    )
+
+
 
     Image(
         painter = painterResource(id = R.drawable.profile_bg),
@@ -161,7 +199,7 @@ fun ProfileSuccessScreen(
         modifier = Modifier.fillMaxWidth(),
         contentScale = ContentScale.FillWidth
     )
-    
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -171,26 +209,48 @@ fun ProfileSuccessScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-        ){
-            Image(
-                painter = /*if(user.photo != null) {
-                    rememberAsyncImagePainter(
-                        model = user.photo,
-                        placeholder = painterResource(id = R.drawable.person_ava),
-                    )
-                } else */painterResource(id = R.drawable.person_ava),
-                contentDescription = "img",
-                modifier = Modifier
-                    .width(140.dp)
-                    .aspectRatio(1f)
-                    .clip(CircleShape)
-                    .align(Alignment.Center)
-                    .border(
-                        width = 2.dp,
-                        shape = CircleShape,
-                        color = Color.White
-                    )
-            )
+        ) {
+            if(imageUri == null){
+                Image(
+                    painter = if (user.photo != null) {
+                        rememberAsyncImagePainter(
+                            model = user.photo,
+                            placeholder = painterResource(id = R.drawable.person_ava),
+                        )
+                    } else painterResource(id = R.drawable.person_ava),
+                    contentDescription = "img",
+                    modifier = Modifier
+                        .width(140.dp)
+                        .aspectRatio(1f)
+                        .clip(CircleShape)
+                        .align(Alignment.Center)
+                        .border(
+                            width = 2.dp,
+                            shape = CircleShape,
+                            color = Color.White
+                        ),
+                    contentScale = ContentScale.FillBounds
+                )
+            }
+            else {
+                AsyncImage(
+                    model = imageUri,
+                    contentDescription = "img",
+                    modifier = Modifier
+                        .width(140.dp)
+                        .aspectRatio(1f)
+                        .clip(CircleShape)
+                        .align(Alignment.Center)
+                        .border(
+                            width = 2.dp,
+                            shape = CircleShape,
+                            color = Color.White
+                        ),
+                    contentScale = ContentScale.FillBounds
+                )
+                Log.d("myLog", "uri: ${imageUri!!.path}")
+            }
+
             Box(
                 modifier = Modifier
                     .width(40.dp)
@@ -199,10 +259,13 @@ fun ProfileSuccessScreen(
                     .clip(CircleShape)
                     .background(PurpleDark)
                     .align(Alignment.BottomCenter)
-
-                    .clickable { },
+                    .clickable {
+                        photoPickerLauncher.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
+                    },
                 contentAlignment = Alignment.Center
-            ){
+            ) {
                 Icon(
                     imageVector = Icons.Default.Create,
                     contentDescription = "",
@@ -379,21 +442,48 @@ fun ProfileSuccessScreen(
                         )
                     )
                     .clickable {
-                        viewModel.updateUser(token!!, user.id,
-                            User(
-                                user.id,
-                                userEmail.ifEmpty { user.email },
-                                userName.ifEmpty { user.username },
-                                userPhone.ifEmpty { user.phoneNum },
+
+                        val inputStream = imageUri?.let { context.contentResolver.openInputStream(it) }
+                        val file = createTempFile("image", ".jpg")
+
+                        inputStream?.use { input ->
+                            file.outputStream().use { output ->
+                                input.copyTo(output)
+                            }
+                        }
+
+                        val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                        val body = MultipartBody.Part.createFormData(
+                            "photo", file.name,
+                            requestFile
                             )
+
+
+                        val id = user.id
+                            .toString()
+                            .toRequestBody("text/plain".toMediaTypeOrNull())
+                        val email = userEmail
+                            .ifEmpty { user.email }
+                            .toRequestBody("text/plain".toMediaTypeOrNull())
+                        val username = userName
+                            .ifEmpty { user.username }
+                            .toRequestBody("text/plain".toMediaTypeOrNull())
+                        val phoneNum = userPhone
+                            .ifEmpty { user.phoneNum }
+                            ?.toRequestBody("text/plain".toMediaTypeOrNull())
+
+
+                        viewModel.updateUser(
+                            token!!, user.id,
+                            id, email, username, phoneNum, body
                         )
-                        navController.navigate(Screen.ProfileScreen.route){
-                            popUpTo(Screen.ProfileScreen.route){inclusive = true}
+                        navController.navigate(Screen.ProfileScreen.route) {
+                            popUpTo(Screen.ProfileScreen.route) { inclusive = true }
                         }
 
                     },
                 contentAlignment = Alignment.Center
-            ){
+            ) {
                 Text(
                     text = stringResource(R.string.save),
                     fontSize = 20.sp,

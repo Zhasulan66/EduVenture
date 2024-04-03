@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,10 +41,10 @@ class MainViewModel @Inject constructor(
     private val _universityState = MutableStateFlow<Resource<List<University>>>(Resource.Loading)
     val universityState: StateFlow<Resource<List<University>>> = _universityState.asStateFlow()
 
-    fun fetchAllUniversities() {
+    fun fetchAllUniversities(country: String) {
         viewModelScope.launch {
             try {
-                val universityList = repository.getAllUniversities()
+                val universityList = repository.getAllUniversities(country = if(country == "All") "" else country)
                 _universityState.value = Resource.Success(universityList)
             } catch (e: Exception) {
                 _universityState.value = Resource.Error(e)
@@ -54,13 +56,28 @@ class MainViewModel @Inject constructor(
     private val _internshipState = MutableStateFlow<Resource<List<Internship>>>(Resource.Loading)
     val internshipState: StateFlow<Resource<List<Internship>>> = _internshipState.asStateFlow()
 
-    fun fetchAllInternships() {
+    fun fetchAllInternships(profession: Int) {
         viewModelScope.launch {
             try {
-                val internshipList = repository.getAllInternships()
+                val internshipList = repository.getAllInternships(if(profession != 0) profession else null)
                 _internshipState.value = Resource.Success(internshipList)
             } catch (e: Exception) {
                 _internshipState.value = Resource.Error(e)
+            }
+        }
+    }
+
+    //profession
+    private val _professionState = MutableStateFlow<Resource<List<Profession>>>(Resource.Loading)
+    val professionState: StateFlow<Resource<List<Profession>>> = _professionState.asStateFlow()
+
+    fun fetchAllProfession() {
+        viewModelScope.launch {
+            try {
+                val professionList = repository.getAllProfessions()
+                _professionState.value = Resource.Success(professionList)
+            } catch (e: Exception) {
+                _professionState.value = Resource.Error(e)
             }
         }
     }
@@ -117,11 +134,11 @@ class MainViewModel @Inject constructor(
     private val _userInfoState = MutableStateFlow<Resource<User>>(Resource.Initial)
     val userInfoState: StateFlow<Resource<User>> = _userInfoState.asStateFlow()
 
-    fun fetchUserById(token: String, id: Int) {
+    fun fetchUserByToken(token: String) {
         viewModelScope.launch {
             _userInfoState.value = Resource.Loading
             try {
-                val user = repository.getUserById("Token $token",id)
+                val user = repository.getUserByToken("Token $token")
                 _userInfoState.value = Resource.Success(user)
             } catch (e: Exception) {
                 _userInfoState.value = Resource.Error(e)
@@ -129,9 +146,14 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun updateUser(token: String, id: Int, user: User) {
+    fun updateUser(token: String, pathId: Int,
+                   id: RequestBody,
+                   email: RequestBody,
+                   username: RequestBody,
+                   phoneNum: RequestBody?,
+                   photo: MultipartBody.Part?) {
         viewModelScope.launch {
-            val updatedUser = repository.updateUser("Token $token",id, user)
+            val updatedUser = repository.updateUser("Token $token",pathId, id, email, username, phoneNum, photo)
 
         }
     }

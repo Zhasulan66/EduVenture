@@ -17,24 +17,16 @@ import com.example.eduventure.domain.model.Auth.UserLogin
 import com.example.eduventure.domain.model.Auth.VerificationRequest
 import com.example.eduventure.domain.model.Auth.VerifyCodeRequest
 import com.example.eduventure.domain.model.Auth.VerifyCodeResponse
+import com.example.eduventure.domain.model.Profession
 import com.example.eduventure.domain.model.User
 import com.example.eduventure.domain.repository.EduVentureRepository
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import retrofit2.Call
 
 class EduVentureRepositoryImpl(
     private val api: EduVentureApiService
 ) : EduVentureRepository {
-
-    override suspend fun getAllNews(): List<News> {
-        return api.getAllNews()
-    }
-
-    override suspend fun getAllUniversities(): List<University> {
-        return api.getAllUniversities()
-    }
-
-    override suspend fun getAllInternships(): List<Internship> {
-        return api.getAllInternships()
-    }
 
     override suspend fun registerUser(userRequest: UserRequest): UserResponse {
         return api.registerUser(userRequest)
@@ -64,6 +56,22 @@ class EduVentureRepositoryImpl(
         return api.resetPassword(resetPasswordRequest)
     }
 
+    override suspend fun getAllNews(): List<News> {
+        return api.getAllNews()
+    }
+
+    override suspend fun getAllUniversities(country: String): List<University> {
+        return api.getAllUniversities(country)
+    }
+
+    override suspend fun getAllInternships(profession: Int?): List<Internship> {
+        return api.getAllInternships(profession)
+    }
+
+    override suspend fun getAllProfessions(): List<Profession> {
+        return api.getAllProfessions()
+    }
+
     override suspend fun getNewsById(id: Int): News {
         return api.getNewsById(id)
     }
@@ -76,11 +84,19 @@ class EduVentureRepositoryImpl(
         return api.getInternshipById(id)
     }
 
-    override suspend fun getUserById(token: String, id: Int): User {
-        return api.getUserById(token, id)
+    override suspend fun getUserByToken(token: String): User {
+        return api.getUserByToken(token)
     }
 
-    override suspend fun updateUser(token: String, id: Int, user: User): User {
-        return api.updateUser(token, id, user)
+    override suspend fun updateUser(
+        token: String,
+        pathId: Int,
+        id: RequestBody,
+        email: RequestBody,
+        username: RequestBody,
+        phoneNum: RequestBody?,
+        photo: MultipartBody.Part?
+    ): Call<User> {
+        return api.updateUser(token, pathId, id, email, username, phoneNum, photo)
     }
 }

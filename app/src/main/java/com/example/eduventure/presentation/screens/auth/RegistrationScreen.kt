@@ -387,7 +387,7 @@ fun RegisterFields(
                     contentAlignment = Alignment.Center
                 ){
                     Text(
-                        text = stringResource(R.string.enter),
+                        text = stringResource(R.string.register_continue),
                         fontSize = 20.sp,
                         fontFamily = Constants.INTER_FONT_FAMILY,
                         fontWeight = FontWeight.SemiBold,
