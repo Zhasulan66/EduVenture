@@ -65,7 +65,7 @@ fun InternshipCard(
                 contentDescription = "img",
                 modifier = Modifier
                     .width(68.dp),
-                contentScale = ContentScale.FillBounds
+                contentScale = ContentScale.FillHeight
             )
             Spacer(modifier = Modifier.width(8.dp))
 

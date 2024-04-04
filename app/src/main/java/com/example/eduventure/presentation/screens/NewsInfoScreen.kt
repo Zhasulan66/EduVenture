@@ -42,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -142,10 +143,11 @@ fun NewsInfoScreen(
             }
         }
 
+        val screenWidth = LocalConfiguration.current.screenWidthDp
         NavigationView(
             modifier = Modifier.align(Alignment.BottomCenter),
             navController = navController,
-            focusedOffset = 24
+            focusedOffset = screenWidth/17 //24
         )
     }
 
@@ -165,63 +167,67 @@ fun NewsSuccessScreen(
     ) {
         Spacer(modifier = Modifier.height(100.dp))
 
-        var imageList by remember { mutableStateOf(emptyList<String>()) }
-        if(imageList.isEmpty()){
-            if(news.photo1 != null) imageList += news.photo1
-            if(news.photo2 != null) imageList += news.photo2
-            if(news.photo3 != null) imageList += news.photo3
-        }
+        LazyColumn {
 
-        val pagerState = rememberPagerState { imageList.size }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f)
-        ) {
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f),
-                key = { imageList[it] }
-            ) { index ->
-                Image(
-                    painter = rememberAsyncImagePainter(
-                        model = imageList[index],
-                        placeholder = painterResource(id = R.drawable.img_placeholder),
-                    ),
-                    contentDescription = "img",
+
+            item {
+                var imageList by remember { mutableStateOf(emptyList<String>()) }
+                if (imageList.isEmpty()) {
+                    if (news.photo1 != null) imageList += news.photo1
+                    if (news.photo2 != null) imageList += news.photo2
+                    if (news.photo3 != null) imageList += news.photo3
+                }
+                val pagerState = rememberPagerState { imageList.size }
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(1f),
-                    contentScale = ContentScale.FillBounds,
-                )
-            }
-            if (imageList.size > 1) {
-                Row(
-                    modifier = Modifier
-                        .align(alignment = Alignment.BottomCenter)
-                        .offset(y = (-16).dp)
+                        .aspectRatio(1f)
                 ) {
-                    repeat(imageList.size) { index ->
-                        Box(
+                    HorizontalPager(
+                        state = pagerState,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1f),
+                        key = { imageList[it] }
+                    ) { index ->
+                        Image(
+                            painter = rememberAsyncImagePainter(
+                                model = imageList[index],
+                                placeholder = painterResource(id = R.drawable.img_placeholder),
+                            ),
+                            contentDescription = "img",
                             modifier = Modifier
-                                .size(10.dp)
-                                .clip(CircleShape)
-                                .background(if (pagerState.currentPage == index) Color.White else Color.Transparent)
-                                .border(
-                                    border = BorderStroke(2.dp, Color.White),
-                                    shape = CircleShape
-                                )
+                                .fillMaxWidth()
+                                .aspectRatio(1f),
+                            contentScale = ContentScale.FillBounds,
                         )
-                        Spacer(modifier = Modifier.width(10.dp))
+                    }
+                    if (imageList.size > 1) {
+                        Row(
+                            modifier = Modifier
+                                .align(alignment = Alignment.BottomCenter)
+                                .offset(y = (-16).dp)
+                        ) {
+                            repeat(imageList.size) { index ->
+                                Box(
+                                    modifier = Modifier
+                                        .size(10.dp)
+                                        .clip(CircleShape)
+                                        .background(if (pagerState.currentPage == index) Color.White else Color.Transparent)
+                                        .border(
+                                            border = BorderStroke(2.dp, Color.White),
+                                            shape = CircleShape
+                                        )
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                            }
+                        }
                     }
                 }
+                Spacer(modifier = Modifier.height(12.dp))
             }
-        }
-        Spacer(modifier = Modifier.height(12.dp))
 
-        LazyColumn {
+
             item {
                 //date
                 Text(

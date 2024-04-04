@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -146,12 +147,11 @@ fun ProfileScreen(
             )
         }
 
-
-
+        val screenWidth = LocalConfiguration.current.screenWidthDp
         NavigationView(
             modifier = Modifier.align(Alignment.BottomCenter),
             navController = navController,
-            focusedOffset = 298
+            focusedOffset = (screenWidth/1.38).toInt()//298
         )
     }
 }

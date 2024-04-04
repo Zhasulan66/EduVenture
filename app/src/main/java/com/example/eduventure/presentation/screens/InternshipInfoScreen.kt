@@ -1,5 +1,6 @@
 package com.example.eduventure.presentation.screens
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -29,7 +31,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -129,10 +133,11 @@ fun InternshipInfoScreen(
             }
         }
 
+        val screenWidth = LocalConfiguration.current.screenWidthDp
         NavigationView(
             modifier = Modifier.align(Alignment.BottomCenter),
             navController = navController,
-            focusedOffset = 206
+            focusedOffset = (screenWidth/2).toInt() //206
         )
     }
 
@@ -152,12 +157,10 @@ fun InternshipSuccessScreen(
     ) {
         Spacer(modifier = Modifier.height(100.dp))
 
-
-
         LazyColumn {
             item {
 
-                //university logo name
+                //company logo name
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -176,9 +179,9 @@ fun InternshipSuccessScreen(
                             color = Color.Black,
                         )
                         Spacer(modifier = Modifier.height(4.dp))
-                        //location
+                        //country
                         Text(
-                            text = internship.country + ", " + internship.city,
+                            text = internship.country,
                             fontSize = 14.sp,
                             fontFamily = Constants.INTER_FONT_FAMILY,
                             fontWeight = FontWeight.SemiBold,
@@ -217,28 +220,47 @@ fun InternshipSuccessScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
 
-                //isPaid
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "IsPaid",
-                        fontSize = 16.sp,
-                        fontFamily = Constants.INTER_FONT_FAMILY,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.Black,
-                    )
-                    Text(
-                        text = if(internship.isPaidInternship) "Yes. ${internship.salary}" else "No",
-                        fontSize = 14.sp,
-                        fontFamily = Constants.INTER_FONT_FAMILY,
-                        color = Color.Black,
-                    )
+                //duration
+                internship.duration?.let{
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Duration",
+                            fontSize = 16.sp,
+                            fontFamily = Constants.INTER_FONT_FAMILY,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.Black,
+                        )
+                        Text(
+                            text = it,
+                            fontSize = 14.sp,
+                            fontFamily = Constants.INTER_FONT_FAMILY,
+                            color = Color.Black,
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
                 }
-                Spacer(modifier = Modifier.height(12.dp))
 
+
+                //location
+                Text(
+                    text = "Location",
+                    fontSize = 16.sp,
+                    fontFamily = Constants.INTER_FONT_FAMILY,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.Black,
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = internship.location,
+                    fontSize = 14.sp,
+                    fontFamily = Constants.INTER_FONT_FAMILY,
+                    color = Color.Black,
+                )
+                Spacer(modifier = Modifier.height(20.dp))
 
                 //info
                 Text(
@@ -258,11 +280,7 @@ fun InternshipSuccessScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 //deadline
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
+                internship.deadline?.let {
                     Text(
                         text = "DeadLine",
                         fontSize = 16.sp,
@@ -270,34 +288,106 @@ fun InternshipSuccessScreen(
                         fontWeight = FontWeight.SemiBold,
                         color = Color.Black,
                     )
+                    Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = internship.deadline,
+                        text = it,
+                        fontSize = 14.sp,
+                        fontFamily = Constants.INTER_FONT_FAMILY,
+                        color = Color.Black,
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+                }
+
+                //benefits
+                internship.benefits?.let {
+                    Text(
+                        text = "Benefits",
+                        fontSize = 16.sp,
+                        fontFamily = Constants.INTER_FONT_FAMILY,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.Black,
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    InfoList(it)
+                    Spacer(modifier = Modifier.height(20.dp))
+                }
+
+                //eligibility
+                internship.eligibility?.let {
+                    Text(
+                        text = "Eligibility",
+                        fontSize = 16.sp,
+                        fontFamily = Constants.INTER_FONT_FAMILY,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.Black,
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    InfoList(it)
+                    Spacer(modifier = Modifier.height(20.dp))
+                }
+
+                //required docs
+                internship.requiredDocuments?.let {
+                    Text(
+                        text = "Required Documents",
+                        fontSize = 16.sp,
+                        fontFamily = Constants.INTER_FONT_FAMILY,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.Black,
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    InfoList(it)
+                    Spacer(modifier = Modifier.height(20.dp))
+                }
+
+                //how to apply
+                internship.howToApply?.let {
+                    Text(
+                        text = "How to Apply",
+                        fontSize = 16.sp,
+                        fontFamily = Constants.INTER_FONT_FAMILY,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.Black,
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = it,
                         fontSize = 14.sp,
                         fontFamily = Constants.INTER_FONT_FAMILY,
                         color = Color.Black,
                     )
                 }
-                Spacer(modifier = Modifier.height(20.dp))
-
-                //info
-                Text(
-                    text = "Link to Apply",
-                    fontSize = 16.sp,
-                    fontFamily = Constants.INTER_FONT_FAMILY,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.Black,
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = internship.linkToApply,
-                    fontSize = 14.sp,
-                    fontFamily = Constants.INTER_FONT_FAMILY,
-                    color = Color.Black,
-                )
                 Spacer(modifier = Modifier.height(140.dp))
 
             }
         }
 
+    }
+}
+
+@Composable
+fun InfoList(info: String) {
+    val infoList = info.split("\r\n")
+    Column(modifier = Modifier.padding(8.dp)) {
+        infoList.forEach { benefit ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+
+                // Option 1: Using a Canvas to draw a circle
+                Canvas(modifier = Modifier.size(6.dp).padding(end = 8.dp), onDraw = {
+                    drawCircle(Color.Black, radius = 3.dp.toPx(), style = Fill)
+                })
+
+                // Option 2: Using a Unicode black circle
+                /*Text(text = "● ", fontSize = 14.sp, color = Color.Black)*/
+
+                Text(
+                    text = benefit,
+                    fontSize = 14.sp,
+                    fontFamily = Constants.INTER_FONT_FAMILY,
+                    color = Color.Black,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+            }
+        }
     }
 }

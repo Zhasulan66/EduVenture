@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -113,10 +114,11 @@ fun InternshipScreen(
             else -> {}
         }
 
+        val screenWidth = LocalConfiguration.current.screenWidthDp
         NavigationView(
             modifier = Modifier.align(Alignment.BottomCenter),
             navController = navController,
-            focusedOffset = 206
+            focusedOffset = (screenWidth/2).toInt() //206
         )
     }
 

@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -130,10 +131,11 @@ fun UniversityInfoScreen(
             }
         }
 
+        val screenWidth = LocalConfiguration.current.screenWidthDp
         NavigationView(
             modifier = Modifier.align(Alignment.BottomCenter),
             navController = navController,
-            focusedOffset = 114
+            focusedOffset = (screenWidth/3.6).toInt() //114
         )
     }
 
@@ -162,9 +164,9 @@ fun UniversitySuccessScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                ){
+                ) {
                     Image(
-                        painter = if(university.logo != null) {
+                        painter = if (university.logo != null) {
                             rememberAsyncImagePainter(
                                 model = university.logo,
                                 placeholder = painterResource(id = R.drawable.img_placeholder),
@@ -180,7 +182,7 @@ fun UniversitySuccessScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                    ){
+                    ) {
                         //name
                         Text(
                             text = university.name,
@@ -207,7 +209,7 @@ fun UniversitySuccessScreen(
                     modifier = Modifier
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceAround
-                ){
+                ) {
                     Box(
                         modifier = Modifier
                             .shadow(elevation = 4.dp, shape = RoundedCornerShape(12.dp))
@@ -216,12 +218,12 @@ fun UniversitySuccessScreen(
                             .clip(RoundedCornerShape(12.dp))
                             .background(GrayLight),
                         contentAlignment = Alignment.Center
-                    ){
+                    ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             horizontalAlignment = Alignment.CenterHorizontally
-                        ){
+                        ) {
                             Text(
                                 text = university.ratingByCountry,
                                 fontSize = 20.sp,
@@ -246,12 +248,12 @@ fun UniversitySuccessScreen(
                             .clip(RoundedCornerShape(12.dp))
                             .background(GrayLight),
                         contentAlignment = Alignment.Center
-                    ){
+                    ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             horizontalAlignment = Alignment.CenterHorizontally
-                        ){
+                        ) {
                             Text(
                                 text = university.worldRanking,
                                 fontSize = 20.sp,
@@ -282,47 +284,39 @@ fun UniversitySuccessScreen(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 //essay
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ){
-                    Text(
-                        text = "Essay",
-                        fontSize = 16.sp,
-                        fontFamily = Constants.INTER_FONT_FAMILY,
-                        fontWeight = FontWeight.SemiBold,
-                        color = PurpleDark,
-                    )
-                    Text(
-                        text = university.essay,
-                        fontSize = 14.sp,
-                        fontFamily = Constants.INTER_FONT_FAMILY,
-                        color = Color.Black,
-                    )
-                }
+                Text(
+                    text = "Essay",
+                    fontSize = 16.sp,
+                    fontFamily = Constants.INTER_FONT_FAMILY,
+                    fontWeight = FontWeight.SemiBold,
+                    color = PurpleDark,
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = university.essay,
+                    fontSize = 14.sp,
+                    fontFamily = Constants.INTER_FONT_FAMILY,
+                    color = Color.Black,
+                )
+
                 Spacer(modifier = Modifier.height(12.dp))
 
                 //recommend letter
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ){
-                    Text(
-                        text = "Recommendation\nletter",
-                        fontSize = 16.sp,
-                        fontFamily = Constants.INTER_FONT_FAMILY,
-                        fontWeight = FontWeight.SemiBold,
-                        color = PurpleDark,
-                    )
-                    Text(
-                        text = university.recommendationLetter,
-                        fontSize = 14.sp,
-                        fontFamily = Constants.INTER_FONT_FAMILY,
-                        color = Color.Black,
-                    )
-                }
+                Text(
+                    text = "Recommendation\nletter",
+                    fontSize = 16.sp,
+                    fontFamily = Constants.INTER_FONT_FAMILY,
+                    fontWeight = FontWeight.SemiBold,
+                    color = PurpleDark,
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = university.recommendationLetter,
+                    fontSize = 14.sp,
+                    fontFamily = Constants.INTER_FONT_FAMILY,
+                    color = Color.Black,
+                )
+
                 Spacer(modifier = Modifier.height(12.dp))
 
                 //toefl/ielts
@@ -330,7 +324,7 @@ fun UniversitySuccessScreen(
                     modifier = Modifier
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
-                ){
+                ) {
                     Text(
                         text = "TOEFL/IELTS",
                         fontSize = 16.sp,
@@ -352,7 +346,7 @@ fun UniversitySuccessScreen(
                     modifier = Modifier
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
-                ){
+                ) {
                     Text(
                         text = "SAT",
                         fontSize = 16.sp,
@@ -374,7 +368,7 @@ fun UniversitySuccessScreen(
                     modifier = Modifier
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
-                ){
+                ) {
                     Text(
                         text = "Cost of \nRequest",
                         fontSize = 16.sp,
@@ -396,7 +390,7 @@ fun UniversitySuccessScreen(
                     modifier = Modifier
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
-                ){
+                ) {
                     Box(
                         modifier = Modifier
                             .shadow(elevation = 4.dp, shape = RoundedCornerShape(12.dp))
@@ -405,12 +399,12 @@ fun UniversitySuccessScreen(
                             .clip(RoundedCornerShape(12.dp))
                             .background(GrayLight),
                         contentAlignment = Alignment.Center
-                    ){
+                    ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             horizontalAlignment = Alignment.CenterHorizontally
-                        ){
+                        ) {
                             Text(
                                 text = university.deadline1,
                                 fontSize = 14.sp,
@@ -434,12 +428,12 @@ fun UniversitySuccessScreen(
                             .clip(RoundedCornerShape(12.dp))
                             .background(GrayLight),
                         contentAlignment = Alignment.Center
-                    ){
+                    ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             horizontalAlignment = Alignment.CenterHorizontally
-                        ){
+                        ) {
                             Text(
                                 text = university.deadline2,
                                 fontSize = 14.sp,
@@ -473,7 +467,7 @@ fun UniversitySuccessScreen(
                     modifier = Modifier
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
-                ){
+                ) {
                     Text(
                         text = "Full Grant",
                         fontSize = 16.sp,
@@ -495,7 +489,7 @@ fun UniversitySuccessScreen(
                     modifier = Modifier
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
-                ){
+                ) {
                     Text(
                         text = "Income Percentage",
                         fontSize = 16.sp,

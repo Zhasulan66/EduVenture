@@ -222,7 +222,6 @@ fun LoginFields(
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp)
                         .border(
                             width = 1.dp,
                             color = if(isUserEmailIncorrect) Color.Red else Color.White,
@@ -264,7 +263,6 @@ fun LoginFields(
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp)
                         .border(
                             width = 1.dp,
                             color = if(isUserPasswordIncorrect) Color.Red else Color.White,

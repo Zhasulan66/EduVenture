@@ -64,7 +64,7 @@ fun NewsCard(
                 contentDescription = "img",
                 modifier = Modifier
                     .width(140.dp),
-                contentScale = ContentScale.FillWidth
+                contentScale = ContentScale.FillHeight
             )
             Spacer(modifier = Modifier.width(8.dp))
 

@@ -9,15 +9,17 @@ data class Internship(
     val organizationLogo: String?,
     val organization: String,
     val country: String,
-    val city: String,
+    val location: String,
     val description: String,
-    @SerializedName("paid_internship")
-    val isPaidInternship: Boolean,
-    val salary: String,
-    val deadline: String,
-    @SerializedName("link_to_apply")
-    val linkToApply: String,
-    val profession: Int
+    val duration: String?,
+    val benefits: String?,
+    val eligibility: String?,
+    @SerializedName("required_documents")
+    val requiredDocuments: String?,
+    @SerializedName("how_to_apply")
+    val howToApply: String?,
+    val deadline: String?,
+    val profession: Int?
 )
 
 /*{
