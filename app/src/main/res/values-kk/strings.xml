@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="entrance">Kiru</string>
-    <string name="mail">Poshta</string>
-    <string name="password">Kupiasoz</string>
-    <string name="forgot_password">Kupia sozdi umyttynyz ba?</string>
-    <string name="enter">Kiru</string>
-    <string name="dont_have_account">Sizde akaunt jok pa?</string>
-    <string name="registration">Tirkelu</string>
+    <string name="entrance">Кіру</string>
+    <string name="mail">Пошта</string>
+    <string name="password">Құпиясөз</string>
+    <string name="forgot_password">Құпия сөзді ұмыттыңыз ба?</string>
+    <string name="enter">Кіру</string>
+    <string name="dont_have_account">Сізде аккаунт жоқ па?</string>
+    <string name="registration">Тіркелу</string>
     <string name="phone_number">Телефон номері</string>
     <string name="already_have_account">Сізде аккаунт бар ма?</string>
     <string name="news">Жаңалықтар</string>
@@ -15,15 +15,15 @@
     <string name="internship">Тағылымдама</string>
     <string name="save">Сақтау</string>
     <string name="read">Оқу</string>
-    <string name="search">Izdeu...</string>
-    <string name="retry">Kaitadan</string>
-    <string name="loading">Kutiniz</string>
-    <string name="loading_failed">Jukteu mumkin emes</string>
-    <string name="register_continue">Zhaslgastyru</string>
-    <string name="enter_verify_code">Rastau kodyn engiziniz</string>
-    <string name="email_sent_code">Poshtaga 4 tanbaly kod zhiberildi</string>
-    <string name="send_code_again">Kodtty kaittan zhiberu</string>
-    <string name="enter_email">Ozinizdin akauyntynyzdy zhazynyz</string>
-    <string name="create_new_password">Zhana kupiasoz oilap tabynyz</string>
-    <string name="confirm_password">Kupia sozdi rastanyz</string>
+    <string name="search">Іздеу...</string>
+    <string name="retry">Қайтадан</string>
+    <string name="loading">Күтіңіз</string>
+    <string name="loading_failed">Жүктеу мүмкін емес</string>
+    <string name="register_continue">Жалғастыру</string>
+    <string name="enter_verify_code">Растау кодын енгізіңіз</string>
+    <string name="email_sent_code">Поштаға 4 таңбалы код жіберілді</string>
+    <string name="send_code_again">Кодты қайтадан жіберу</string>
+    <string name="enter_email">Өзіңіздің аккаунтыңызды жазыңыз</string>
+    <string name="create_new_password">Жаңа құпия сөз енгізіңіз</string>
+    <string name="confirm_password">Құпия сөзді растаңыз</string>
 </resources>

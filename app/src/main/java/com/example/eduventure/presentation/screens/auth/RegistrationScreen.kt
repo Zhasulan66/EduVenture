@@ -167,7 +167,7 @@ fun RegisterFields(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.7f)
+                .fillMaxHeight(0.8f)
                 .padding(horizontal = 24.dp)
                 .alpha(0.5f)
                 .clip(RoundedCornerShape(12.dp))
@@ -183,7 +183,7 @@ fun RegisterFields(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.7f)
+                .fillMaxHeight(0.8f)
                 .padding(horizontal = 24.dp)
                 .align(Alignment.Center)
         ) {
@@ -354,7 +354,7 @@ fun RegisterFields(
                         unfocusedIndicatorColor = Color.Transparent
                     )
                 )
-                Spacer(modifier = Modifier.height(52.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
                 //Enter button
                 Box(
@@ -405,7 +405,7 @@ fun RegisterFields(
                 ){
                     Text(
                         text = stringResource(R.string.already_have_account),
-                        fontSize = 16.sp,
+                        fontSize = 14.sp,
                         fontFamily = Constants.INTER_FONT_FAMILY,
                         fontWeight = FontWeight.SemiBold,
                         color = Color.White,
@@ -413,7 +413,7 @@ fun RegisterFields(
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = stringResource(R.string.enter),
-                        fontSize = 16.sp,
+                        fontSize = 14.sp,
                         fontFamily = Constants.INTER_FONT_FAMILY,
                         fontWeight = FontWeight.SemiBold,
                         color = PurpleLight,
